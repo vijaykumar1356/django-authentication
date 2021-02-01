@@ -1,0 +1,13 @@
+{% extends 'customer/base.html' %}
+{% block content %}
+  {% for message in messages %}
+    <p>{{message}}</p>
+  {% endfor %}
+  <br>
+  <form method="POST" action="">
+    {% csrf_token %}
+    {{form.as_table}}
+    <input type="submit" value="Login" name="login">
+  </form>
+
+{% endblock content %}

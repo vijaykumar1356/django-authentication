@@ -1,0 +1,6 @@
+{% extends 'customer/base.html' %}
+{% block content %}
+<h1>Welcome to e-commerce Portal</h1>
+<span>Hello, {{user.username|default:"Guest"}}</span>
+<span><a href="{% url 'logout' %}">Logout</a></span>
+{% endblock content %}
