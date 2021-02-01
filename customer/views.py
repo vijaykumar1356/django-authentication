@@ -5,10 +5,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from .forms import RegisterForm, LoginForm, CustomUserCreationForm
-from django.http import HttpResponse
-from .models import CustomUser
+from .decorators import *
 
-
+@unauthenticated_user
 def register_view(request):
     form = CustomUserCreationForm()
     if request.method == "POST":
@@ -21,20 +20,22 @@ def register_view(request):
     context = {'form': form}
     return render(request, "customer/register.html", context)
 
-
+@unauthenticated_user
 def login_view(request):
     form = LoginForm()
     if request.method == "POST":
         form = LoginForm(request.POST)
+        nextURL = request.GET.get('next', None)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            print(username, password, user, end="\n") 
             if user is not None:
                 login(request, user)
+                if nextURL is not None:
+                    return redirect(nextURL)
                 return redirect('home')
-            else:
+            else: 
                 messages.error(request, "Email or Password are incorrect!")
     context = {'form': form}
     return render(request, "customer/login.html", context)
@@ -43,6 +44,6 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
-
+@login_required(login_url='login')
 def home_view(request):
     return render(request, "customer/home.html")
